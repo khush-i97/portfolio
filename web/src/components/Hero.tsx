@@ -10,6 +10,11 @@ export default function Hero() {
 
       {/* Blue glow blob */}
       <div className="absolute bottom-0 -right-40 w-[500px] h-[500px] bg-blue-500 rounded-full blur-[150px] opacity-40" />
+      {/* Soft center glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.25),transparent_55%)]" />
+
+      {/* Slight vignette for depth */}
+      <div className="absolute inset-0 bg-black/10" />
 
       {/* Content */}
       <div className="relative z-10 px-6">
@@ -38,11 +43,16 @@ export default function Hero() {
           </a>
         </div>
 
+
         <div className="mt-10 flex justify-center gap-6 text-white text-2xl">
           <a href="#" aria-label="GitHub" className="hover:opacity-80">🐙</a>
           <a href="#" aria-label="LinkedIn" className="hover:opacity-80">in</a>
           <a href="#" aria-label="Email" className="hover:opacity-80">✉️</a>
         </div>
+      </div>
+
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/80 text-2xl animate-bounce">
+      ⌄
       </div>
     </section>
   );
