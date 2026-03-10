@@ -1,7 +1,17 @@
 export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center text-center overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500" />
+      
+      {/* Base gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-pink-500 via-purple-600 to-blue-500" />
+
+      {/* Pink glow blob */}
+      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-pink-500 rounded-full blur-[150px] opacity-40" />
+
+      {/* Blue glow blob */}
+      <div className="absolute bottom-0 -right-40 w-[500px] h-[500px] bg-blue-500 rounded-full blur-[150px] opacity-40" />
+
+      {/* Content */}
       <div className="relative z-10 px-6">
         <h1 className="text-5xl md:text-7xl font-extrabold text-white">
           Data Engineer
