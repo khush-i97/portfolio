@@ -135,38 +135,52 @@ export default function ProjectsSection({
                   rel="noreferrer"
                   className="block"
                 >
-                  <HoverCard className="h-full overflow-hidden">
-                    <div className="h-28 bg-gradient-to-r from-purple-600 via-fuchsia-600 to-pink-600" />
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-gray-900">{r.name}</h3>
-                      <p className="mt-3 text-gray-600 line-clamp-3">{r.description ?? "No description yet."}</p>
+                  <HoverCard className="h-full overflow-hidden relative">
 
-                      <div className="mt-4 flex items-center gap-3 text-sm text-gray-700">
-                        {r.language && (
-                          <span className="rounded-full bg-fuchsia-100 px-3 py-1 text-fuchsia-700">{r.language}</span>
-                        )}
+  {/* Featured Ribbon */}
+  {r.topics?.includes("portfolio-featured") && (
+    <div className="absolute top-3 right-3 bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full shadow">
+      Featured
+    </div>
+  )}
 
-                        <span className="inline-flex items-center gap-1 rounded px-2 py-1 bg-gray-100">
-                          <Star className="h-4 w-4 text-yellow-500" />
-                          <span className="text-sm">{r.stargazers_count ?? "—"}</span>
-                        </span>
+  <div className="h-28 bg-gradient-to-r from-purple-600 via-fuchsia-600 to-pink-600" />
 
-                        <span className="inline-flex items-center gap-1 rounded px-2 py-1 bg-gray-100">
-                          <GitFork className="h-4 w-4" />
-                          <span className="text-sm">{r.forks_count ?? "—"}</span>
-                        </span>
-                      </div>
+  <div className="p-6">
+    <h3 className="text-xl font-bold text-gray-900">{r.name}</h3>
 
-                      <div className="mt-5 flex items-center gap-5 text-sm font-semibold text-fuchsia-700">
-                        <span className="inline-flex items-center gap-2">
-                          <Github className="h-4 w-4" /> Code
-                        </span>
-                        <span className="inline-flex items-center gap-2">
-                          <ExternalLink className="h-4 w-4" /> Readme
-                        </span>
-                      </div>
-                    </div>
-                  </HoverCard>
+    <p className="mt-3 text-gray-600 line-clamp-3">
+      {r.description ?? "No description yet."}
+    </p>
+
+    <div className="mt-4 flex items-center gap-4 text-sm text-gray-700">
+      {/* Language Dot */}
+      {r.language && (
+        <span className="flex items-center gap-2">
+          <span className="h-3 w-3 rounded-full bg-fuchsia-500" />
+          {r.language}
+        </span>
+      )}
+
+      <span className="flex items-center gap-1">
+        ⭐ {r.stargazers_count ?? 0}
+      </span>
+
+      <span className="flex items-center gap-1">
+        🍴 {r.forks_count ?? 0}
+      </span>
+    </div>
+
+    <div className="mt-5 flex items-center gap-5 text-sm font-semibold text-fuchsia-700">
+      <span className="inline-flex items-center gap-2">
+        Code
+      </span>
+      <span className="inline-flex items-center gap-2">
+        Readme
+      </span>
+    </div>
+  </div>
+</HoverCard>
                 </a>
               ))}
             </div>

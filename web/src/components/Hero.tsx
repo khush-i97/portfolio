@@ -5,7 +5,10 @@ import { Github, Linkedin, Mail, ChevronDown } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center text-center overflow-hidden">
+    <section
+      id="top"
+      className="relative min-h-screen flex items-center justify-center text-center overflow-hidden"
+    >
       {/* Base gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-pink-500 via-purple-600 to-blue-500" />
 
