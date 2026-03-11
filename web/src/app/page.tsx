@@ -1,20 +1,15 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
+import AboutSection from "@/components/sections/AboutSection";
+import EducationSection from "@/components/sections/EducationSection";
+import ProjectsSection from "@/components/sections/ProjectsSection";
 
-function Section({
-  id,
-  title,
-}: {
-  id: string;
-  title: string;
-}) {
+function Placeholder({ id, title }: { id: string; title: string }) {
   return (
-    <section id={id} className="min-h-[70vh] px-6 py-20 bg-white">
+    <section id={id} className="min-h-[60vh] bg-white px-6 py-20">
       <div className="mx-auto max-w-6xl">
         <h2 className="text-3xl font-bold text-gray-900">{title}</h2>
-        <p className="mt-4 text-gray-600">
-          Placeholder content. We’ll design this section next.
-        </p>
+        <p className="mt-4 text-gray-600">Next section coming next.</p>
       </div>
     </section>
   );
@@ -27,12 +22,12 @@ export default function Home() {
       <Navbar />
       <Hero />
 
-      <Section id="about" title="About" />
-      <Section id="education" title="Education" />
-      <Section id="skills" title="Skills" />
-      <Section id="experience" title="Experience" />
-      <Section id="projects" title="Projects" />
-      <Section id="contact" title="Contact" />
+      <AboutSection />
+      <EducationSection />
+      <Placeholder id="skills" title="Skills" />
+      <Placeholder id="experience" title="Experience" />
+      <ProjectsSection />
+      <Placeholder id="contact" title="Contact" />
     </>
   );
 }
