@@ -31,7 +31,6 @@ export default function Navbar() {
 
   useEffect(() => {
     const ids = navItems.map((n) => n.id);
-
     const elements = ids
       .map((id) => document.getElementById(id))
       .filter(Boolean) as HTMLElement[];
@@ -46,7 +45,7 @@ export default function Navbar() {
 
         if (visible?.target?.id) setActiveId(visible.target.id);
       },
-      { threshold: [0.25, 0.4, 0.6] }
+      { threshold: [0.25, 0.45, 0.65] }
     );
 
     elements.forEach((el) => observer.observe(el));
@@ -54,7 +53,7 @@ export default function Navbar() {
   }, [navItems]);
 
   const linkClass = (id: string) =>
-    `transition-colors ${
+    `text-sm md:text-[13px] font-medium transition ${
       activeId === id
         ? "text-fuchsia-700"
         : "text-slate-700 hover:text-fuchsia-700"
@@ -62,18 +61,17 @@ export default function Navbar() {
 
   return (
     <header className="fixed top-0 z-50 w-full">
-      <nav className="w-full border-b border-white/40 bg-white/70 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          {/* Brand - aligned + same font/color vibe */}
+      <nav className="w-full border-b border-white/30 bg-white/70 backdrop-blur-md">
+        <div className="container flex items-center justify-between px-6 py-4">
           <a
             href="#top"
-            className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-fuchsia-700 to-purple-700 bg-clip-text text-transparent"
+            className="text-[15px] md:text-base font-extrabold tracking-tight text-fuchsia-700"
           >
             DS Portfolio
           </a>
 
           {/* Desktop */}
-          <div className="hidden md:flex items-center gap-10 text-[15px] font-medium">
+          <div className="hidden md:flex items-center gap-7">
             {navItems.map((item) => (
               <a key={item.id} href={`#${item.id}`} className={linkClass(item.id)}>
                 {item.label}
@@ -81,7 +79,7 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Mobile button */}
+          {/* Mobile */}
           <button
             className="md:hidden inline-flex items-center justify-center rounded-full p-2 hover:bg-black/5 transition"
             onClick={() => setOpen((v) => !v)}
@@ -91,10 +89,9 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Mobile menu */}
         {open && (
-          <div className="md:hidden border-t border-white/40 bg-white/70 backdrop-blur-md">
-            <div className="mx-auto max-w-6xl px-6 py-4 flex flex-col gap-4 text-sm font-medium">
+          <div className="md:hidden border-t border-white/30 bg-white/80 backdrop-blur-md">
+            <div className="container px-6 py-4 flex flex-col gap-4">
               {navItems.map((item) => (
                 <a
                   key={item.id}

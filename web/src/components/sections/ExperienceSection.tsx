@@ -1,61 +1,117 @@
+"use client";
+
+import Reveal from "@/components/Reveal";
+
+type Exp = {
+  role: string;
+  company: string;
+  date: string;
+  bullets: string[];
+};
+
+const experience: Exp[] = [
+  {
+    role: "Data Engineer Intern",
+    company: "Sigmoid Analytics",
+    date: "2025 – Present",
+    bullets: [
+      "Built/optimized data pipelines and analytics workflows.",
+      "Worked with cloud + warehouse patterns and production data hygiene.",
+      "Collaborated with stakeholders to deliver measurable improvements.",
+    ],
+  },
+  {
+    role: "Graduate Student",
+    company: "Arizona State University",
+    date: "2023 – 2025",
+    bullets: [
+      "Projects in data processing at scale, graph processing, ML systems.",
+      "Hands-on work with Kafka, Neo4j, Docker/K8s patterns.",
+    ],
+  },
+  {
+    role: "Projects (Selected)",
+    company: "OpenMonitor / WeatherNova / CityPulse",
+    date: "2024 – 2025",
+    bullets: [
+      "Computer vision monitoring + alerts, weather analysis with satellite data.",
+      "Smart-city analytics + predictive pipelines.",
+    ],
+  },
+];
+
 export default function ExperienceSection() {
-  const experiences = [
-    {
-      title: "Data Engineer Intern",
-      company: "Sigmoid Analytics",
-      period: "June 2025 — August 2025",
-      bullets: [
-        "Engineered scalable data processing microservices for enterprise KPIs.",
-        "Automated reporting workflows reducing manual work by 50%.",
-        "Standardized validation procedures to ensure data integrity.",
-      ],
-    },
-    {
-      title: "Software Engineering Intern",
-      company: "Pharmarack Technologies",
-      period: "Dec 2022 — April 2023",
-      bullets: [
-        "Optimized backend data pipelines improving retrieval speed by 15%.",
-        "Built predictive analytics modules with strict governance compliance.",
-        "Reduced operational latency via performance optimization.",
-      ],
-    },
-    {
-      title: "CTO & Co-Founder",
-      company: "LazyStuff",
-      period: "Dec 2021 — Nov 2022",
-      bullets: [
-        "Led budgeting strategy using analytics from 2,000+ users.",
-        "Built dashboards reducing planning effort by 40%.",
-      ],
-    },
-  ];
-
   return (
-    <section id="experience" className="bg-white px-6 py-20">
-      <div className="mx-auto max-w-6xl">
-        <h2 className="text-center text-4xl font-extrabold text-fuchsia-600">
-          Experience
-        </h2>
-        <div className="mx-auto mt-3 h-1 w-24 rounded-full bg-fuchsia-600" />
-
-        <div className="mt-16 space-y-12">
-          {experiences.map((exp, idx) => (
-            <div key={idx} className="relative pl-10 border-l-4 border-fuchsia-600">
-              <div className="absolute -left-3 top-2 h-6 w-6 rounded-full bg-fuchsia-600" />
-              <h3 className="text-2xl font-bold text-gray-900">{exp.title}</h3>
-              <p className="text-fuchsia-600 font-semibold">{exp.company}</p>
-              <p className="text-gray-500">{exp.period}</p>
-
-              <ul className="mt-4 list-disc pl-6 text-gray-700 space-y-2">
-                {exp.bullets.map((b, i) => (
-                  <li key={i}>{b}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
+    <section id="experience" className="section bg-white">
+      <div className="container">
+        <div className="section-title">
+          <h2>Experience</h2>
+          <div className="underline" />
         </div>
+
+        <Reveal className="mt-14 relative">
+          {/* Center line */}
+          <div className="absolute left-1/2 top-0 hidden h-full w-px -translate-x-1/2 bg-gradient-to-b from-fuchsia-300 via-purple-200 to-transparent md:block" />
+
+          <div className="space-y-10 md:space-y-14">
+            {experience.map((item, i) => {
+              const isLeft = i % 2 === 0; // start LEFT
+              return (
+                <div key={i} className="relative md:grid md:grid-cols-2 md:gap-10">
+                  {/* Dot */}
+                  <div className="absolute left-1/2 top-8 hidden -translate-x-1/2 md:block">
+                    <div className="h-4 w-4 rounded-full bg-white ring-4 ring-fuchsia-300" />
+                  </div>
+
+                  {/* Left column */}
+                  <div className={isLeft ? "md:pr-10" : "md:pr-10 md:opacity-0 md:pointer-events-none"}>
+                    {isLeft && <ExperienceCard item={item} align="right" />}
+                  </div>
+
+                  {/* Right column */}
+                  <div className={!isLeft ? "md:pl-10" : "md:pl-10 md:opacity-0 md:pointer-events-none"}>
+                    {!isLeft && <ExperienceCard item={item} align="left" />}
+                  </div>
+
+                  {/* Mobile (stack) */}
+                  <div className="md:hidden">
+                    <ExperienceCard item={item} align="left" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Reveal>
       </div>
     </section>
+  );
+}
+
+function ExperienceCard({
+  item,
+  align,
+}: {
+  item: Exp;
+  align: "left" | "right";
+}) {
+  return (
+    <div className={`card hover-lift p-6 md:p-7 ${align === "right" ? "md:text-right" : ""}`}>
+      <div className="flex items-start justify-between gap-3">
+        <div className={align === "right" ? "md:ml-auto" : ""}>
+          <p className="text-xs font-semibold text-fuchsia-700">{item.company}</p>
+          <h3 className="mt-1 text-slate-900">{item.role}</h3>
+          <p className="mt-1 text-xs text-slate-500">{item.date}</p>
+        </div>
+      </div>
+
+      <ul className="mt-4 space-y-2 text-sm text-slate-600">
+        {item.bullets.map((b, idx) => (
+          <li key={idx} className="flex gap-2">
+            <span className="mt-2 h-1.5 w-1.5 rounded-full bg-fuchsia-500" />
+            <span className="leading-relaxed">{b}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

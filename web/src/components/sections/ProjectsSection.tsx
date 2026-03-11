@@ -1,206 +1,146 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import HoverCard from "@/components/ui/HoverCard";
-import { Github, ExternalLink, Star, GitFork } from "lucide-react";
+import Reveal from "@/components/Reveal";
+import { ExternalLink, GitFork, Star } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 type Repo = {
   id: number;
   name: string;
-  description: string | null;
   html_url: string;
+  description: string | null;
+  stargazers_count: number;
+  forks_count: number;
   language: string | null;
-  stargazers_count?: number;
-  forks_count?: number;
-  archived?: boolean;
-  fork?: boolean;
 };
 
-const GH_USER = "khush-i97"; // <- your username
-const MAX = 9;
+const USERNAME = "khush-i97";
+const FEATURE_LIMIT = 6;
 
-async function fetchStarredViaGitHub(): Promise<Repo[]> {
-  // direct client fetch (no auth): ok for dev & small scale
-  const res = await fetch(`https://api.github.com/users/${GH_USER}/starred?per_page=100`);
-  if (!res.ok) throw new Error(`GitHub error: ${res.status}`);
-  return (await res.json()) as Repo[];
+function langAccent(language: string | null) {
+  const l = (language || "").toLowerCase();
+  if (l.includes("python")) return "from-amber-200 to-orange-100";
+  if (l.includes("typescript")) return "from-indigo-200 to-sky-100";
+  if (l.includes("javascript")) return "from-yellow-200 to-amber-100";
+  if (l.includes("java")) return "from-red-200 to-rose-100";
+  if (l.includes("c++") || l.includes("c#")) return "from-slate-200 to-zinc-100";
+  return "from-fuchsia-200 to-purple-100";
 }
 
-async function fetchStarredViaApi(): Promise<Repo[]> {
-  // optional server proxy (safer for using token) - see server API code below
-  const res = await fetch(`/api/starred?per_page=100`);
-  if (!res.ok) throw new Error(`Proxy error: ${res.status}`);
-  return (await res.json()) as Repo[];
-}
-
-export default function ProjectsSection({
-  useProxy = false,
-}: {
-  useProxy?: boolean; // set true if you create the server proxy (recommended)
-}) {
+export default function ProjectsSection() {
   const [repos, setRepos] = useState<Repo[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
-    setError(null);
-    setRepos(null);
 
-    const loader = async () => {
-      try {
-        const data = useProxy ? await fetchStarredViaApi() : await fetchStarredViaGitHub();
-        if (!mounted) return;
-        const filtered = data.filter((r) => !r.fork && !r.archived).slice(0, MAX);
-        setRepos(filtered);
-      } catch (err: any) {
-        console.error(err);
-        if (!mounted) return;
-        setError(err.message ?? "Failed to load projects");
-        // try fallback to direct fetch if proxy fails and proxy was requested
-        if (useProxy) {
-          try {
-            const fallback = await fetchStarredViaGitHub();
-            if (!mounted) return;
-            setRepos(fallback.filter((r) => !r.fork && !r.archived).slice(0, MAX));
-            setError(null);
-          } catch (e) {
-            console.error("fallback failed", e);
-          }
-        }
-      }
-    };
+    async function load() {
+      // starred repos (public)
+      const res = await fetch(`https://api.github.com/users/${USERNAME}/starred?per_page=100`);
+      const data = (await res.json()) as Repo[];
+      if (!mounted) return;
 
-    loader();
+      // You can change sorting if you want
+      const sorted = [...data].sort((a, b) => b.stargazers_count - a.stargazers_count);
+      setRepos(sorted.slice(0, FEATURE_LIMIT));
+    }
+
+    load().catch(() => setRepos([]));
     return () => {
       mounted = false;
     };
-  }, [useProxy]);
+  }, []);
+
+  const isLoading = repos === null;
+
+  const viewAllUrl = useMemo(() => `https://github.com/${USERNAME}?tab=stars`, []);
 
   return (
-    <section id="projects" className="bg-white px-6 py-20">
-      <div className="mx-auto max-w-6xl">
-        <h2 className="text-center text-4xl font-extrabold text-fuchsia-600">Featured Projects</h2>
-        <div className="mx-auto mt-3 h-1 w-24 rounded-full bg-fuchsia-600" />
+    <section id="projects" className="section bg-white">
+      <div className="container">
+        <div className="section-title">
+          <h2>Featured Projects</h2>
+          <div className="underline" />
+        </div>
 
-        {/* Error */}
-        {error && (
-          <div className="mt-8 text-center text-sm text-red-600">
-            Failed to load GitHub starred repos. {error}
-          </div>
-        )}
+        <Reveal className="mt-14">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {isLoading &&
+              Array.from({ length: FEATURE_LIMIT }).map((_, i) => <ProjectSkeleton key={i} />)}
 
-        {/* Skeleton while loading */}
-        {repos === null && (
-          <div className="mt-12 grid gap-8 md:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="h-28 rounded-t-2xl bg-gray-200" />
-                <div className="rounded-b-2xl bg-white p-6 shadow-md">
-                  <div className="h-6 w-3/5 bg-gray-200 rounded" />
-                  <div className="mt-4 h-4 w-full bg-gray-200 rounded" />
-                  <div className="mt-6 flex gap-3">
-                    <div className="h-8 w-16 bg-gray-200 rounded" />
-                    <div className="h-8 w-16 bg-gray-200 rounded" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* No starred repos */}
-        {repos && repos.length === 0 && (
-          <div className="mt-12 text-center text-gray-600">
-            <p className="mb-4">No starred projects found. Star repos on GitHub to feature them here.</p>
-            <a
-              href={`https://github.com/${GH_USER}`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-fuchsia-200 px-5 py-2 font-semibold text-fuchsia-700 hover:bg-fuchsia-50 transition"
-            >
-              <Github className="h-4 w-4" /> View profile on GitHub
-            </a>
-          </div>
-        )}
-
-        {/* Repos grid */}
-        {repos && repos.length > 0 && (
-          <>
-            <div className="mt-12 grid gap-8 md:grid-cols-3">
-              {repos.map((r) => (
+            {!isLoading &&
+              (repos ?? []).map((repo) => (
                 <a
-                  key={r.id}
-                  href={`${r.html_url}#readme`}
+                  key={repo.id}
+                  href={repo.html_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="block"
+                  className="group card hover-lift overflow-hidden"
                 >
-                  <HoverCard className="h-full overflow-hidden relative">
+                  {/* top accent (varies by language) */}
+                  <div className={`h-12 w-full bg-gradient-to-r ${langAccent(repo.language)}`} />
 
-  {/* Featured Ribbon */}
-  {r.topics?.includes("portfolio-featured") && (
-    <div className="absolute top-3 right-3 bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full shadow">
-      Featured
-    </div>
-  )}
+                  <div className="p-6">
+                    <div className="flex items-start justify-between gap-3">
+                      <h3 className="text-slate-900 group-hover:text-fuchsia-700 transition">
+                        {repo.name}
+                      </h3>
+                      <ExternalLink className="h-4 w-4 text-slate-400 group-hover:text-fuchsia-700 transition" />
+                    </div>
 
-  <div className="h-28 bg-gradient-to-r from-purple-600 via-fuchsia-600 to-pink-600" />
+                    <p className="mt-2 text-sm text-slate-600">
+                      {repo.description || "No description yet."}
+                    </p>
 
-  <div className="p-6">
-    <h3 className="text-xl font-bold text-gray-900">{r.name}</h3>
+                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                      {repo.language && (
+                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                          {repo.language}
+                        </span>
+                      )}
 
-    <p className="mt-3 text-gray-600 line-clamp-3">
-      {r.description ?? "No description yet."}
-    </p>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                        <Star className="h-3.5 w-3.5" /> {repo.stargazers_count}
+                      </span>
 
-    <div className="mt-4 flex items-center gap-4 text-sm text-gray-700">
-      {/* Language Dot */}
-      {r.language && (
-        <span className="flex items-center gap-2">
-          <span className="h-3 w-3 rounded-full bg-fuchsia-500" />
-          {r.language}
-        </span>
-      )}
-
-      <span className="flex items-center gap-1">
-        ⭐ {r.stargazers_count ?? 0}
-      </span>
-
-      <span className="flex items-center gap-1">
-        🍴 {r.forks_count ?? 0}
-      </span>
-    </div>
-
-    <div className="mt-5 flex items-center gap-5 text-sm font-semibold text-fuchsia-700">
-      <span className="inline-flex items-center gap-2">
-        Code
-      </span>
-      <span className="inline-flex items-center gap-2">
-        Readme
-      </span>
-    </div>
-  </div>
-</HoverCard>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                        <GitFork className="h-3.5 w-3.5" /> {repo.forks_count}
+                      </span>
+                    </div>
+                  </div>
                 </a>
               ))}
-            </div>
+          </div>
 
-            <div className="mt-10 text-center">
-              <a
-                href={`https://github.com/${GH_USER}?tab=stars`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-fuchsia-200 px-5 py-2 font-semibold text-fuchsia-700 hover:bg-fuchsia-50 transition"
-              >
-                <Github className="h-4 w-4" /> View starred on GitHub
-              </a>
-              <div className="mt-3 text-sm text-gray-500">
-                Or <a className="underline" href={`https://github.com/${GH_USER}`} target="_blank" rel="noreferrer">view all repos</a>.
-              </div>
-            </div>
-          </>
-        )}
+          <div className="mt-10 flex justify-center">
+            <a
+              href={viewAllUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-fuchsia-200 px-5 py-2 text-sm font-semibold text-fuchsia-700 hover:bg-fuchsia-50 transition"
+            >
+              View all on GitHub
+            </a>
+          </div>
+        </Reveal>
       </div>
     </section>
+  );
+}
+
+function ProjectSkeleton() {
+  return (
+    <div className="card overflow-hidden">
+      <div className="h-12 w-full bg-slate-100 animate-pulse" />
+      <div className="p-6 space-y-3">
+        <div className="h-4 w-2/3 bg-slate-100 rounded animate-pulse" />
+        <div className="h-3 w-full bg-slate-100 rounded animate-pulse" />
+        <div className="h-3 w-5/6 bg-slate-100 rounded animate-pulse" />
+        <div className="mt-2 flex gap-2">
+          <div className="h-7 w-20 bg-slate-100 rounded-full animate-pulse" />
+          <div className="h-7 w-16 bg-slate-100 rounded-full animate-pulse" />
+          <div className="h-7 w-16 bg-slate-100 rounded-full animate-pulse" />
+        </div>
+      </div>
+    </div>
   );
 }

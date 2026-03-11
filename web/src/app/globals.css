@@ -1,26 +1,61 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  body {
+    @apply bg-white text-slate-900 antialiased;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Reduce overall text size + consistent leading */
+  p {
+    @apply text-sm md:text-base leading-relaxed text-slate-600;
+  }
+
+  /* Consistent heading scale (smaller than before) */
+  h1 { @apply text-3xl md:text-5xl font-extrabold tracking-tight; }
+  h2 { @apply text-2xl md:text-4xl font-extrabold tracking-tight; }
+  h3 { @apply text-xl md:text-2xl font-bold tracking-tight; }
+
+  /* Better focus outline */
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.18);
+    border-radius: 12px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Global section spacing */
+  .section {
+    @apply scroll-mt-24 px-6 py-16 md:py-24;
+  }
+
+  .container {
+    @apply mx-auto max-w-6xl;
+  }
+
+  .section-title {
+    @apply text-center;
+  }
+
+  .section-title h2 {
+    @apply text-fuchsia-600;
+  }
+
+  .section-title .underline {
+    @apply mx-auto mt-3 h-1 w-20 md:w-24 rounded-full bg-fuchsia-600;
+  }
+
+  /* Nice card base */
+  .card {
+    @apply rounded-3xl bg-white/80 ring-1 ring-black/5 shadow-lg backdrop-blur-sm;
+  }
+
+  /* Slight lift hover */
+  .hover-lift {
+    @apply transition duration-200 hover:-translate-y-1 hover:shadow-xl;
+  }
 }
