@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* =========================
+   Global base typography
+   ========================= */
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -9,17 +12,25 @@
     @apply bg-white text-slate-900 antialiased;
   }
 
-  /* Reduce overall text size + consistent leading */
+  /* Smaller + consistent base text */
   p {
-    @apply text-sm md:text-base leading-relaxed text-slate-600;
+    @apply text-sm md:text-[15px] leading-relaxed text-slate-600;
   }
 
-  /* Consistent heading scale (smaller than before) */
-  h1 { @apply text-3xl md:text-5xl font-extrabold tracking-tight; }
-  h2 { @apply text-2xl md:text-4xl font-extrabold tracking-tight; }
-  h3 { @apply text-xl md:text-2xl font-bold tracking-tight; }
+  h1 {
+    @apply text-3xl md:text-5xl font-extrabold tracking-tight;
+  }
+  h2 {
+    @apply text-2xl md:text-4xl font-extrabold tracking-tight;
+  }
+  h3 {
+    @apply text-xl md:text-2xl font-bold tracking-tight;
+  }
 
-  /* Better focus outline */
+  a {
+    @apply outline-none;
+  }
+
   :focus-visible {
     outline: none;
     box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.18);
@@ -27,14 +38,21 @@
   }
 }
 
+/* =========================
+   Reusable layout utilities
+   ========================= */
 @layer components {
-  /* Global section spacing */
-  .section {
-    @apply scroll-mt-24 px-6 py-16 md:py-24;
+  .container {
+    @apply mx-auto max-w-6xl px-6;
   }
 
-  .container {
-    @apply mx-auto max-w-6xl;
+  /* Global section spacing */
+  .section {
+    @apply scroll-mt-24 py-16 md:py-24;
+  }
+
+  .section-bg {
+    @apply bg-gradient-to-br from-purple-100 via-fuchsia-100 to-white;
   }
 
   .section-title {
@@ -49,13 +67,19 @@
     @apply mx-auto mt-3 h-1 w-20 md:w-24 rounded-full bg-fuchsia-600;
   }
 
-  /* Nice card base */
   .card {
     @apply rounded-3xl bg-white/80 ring-1 ring-black/5 shadow-lg backdrop-blur-sm;
   }
 
-  /* Slight lift hover */
   .hover-lift {
     @apply transition duration-200 hover:-translate-y-1 hover:shadow-xl;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-black/5;
+  }
+
+  .muted {
+    @apply text-slate-600;
   }
 }
