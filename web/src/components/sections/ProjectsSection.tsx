@@ -41,31 +41,34 @@ function langDot(language: string | null) {
   return "bg-fuchsia-500";
 }
 
+type ApiResponse =
+  | { ok: true; repos: Repo[] }
+  | { ok: false; error: string };
+
 export default function ProjectsSection() {
   const [repos, setRepos] = useState<Repo[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
 
     async function load() {
-      const res = await fetch(
-        `https://api.github.com/users/${USERNAME}/starred?per_page=100`
-      );
-      if (!res.ok) throw new Error(`GitHub error ${res.status}`);
-      const data = (await res.json()) as Repo[];
+      const res = await fetch("/api/projects");
+      const data = (await res.json()) as ApiResponse;
 
-      const filtered = data
-        .filter((r) => !r.fork && !r.archived)
-        // sort by stars so the “best” show first
-        .sort((a, b) => (b.stargazers_count ?? 0) - (a.stargazers_count ?? 0))
-        .slice(0, LIMIT);
+      if (!res.ok || !data.ok) {
+        throw new Error(!data.ok ? data.error : `Request failed (${res.status})`);
+      }
 
-      if (mounted) setRepos(filtered);
+      if (mounted) setRepos(data.repos);
     }
 
-    load()
-      .catch(() => mounted && setRepos([]))
-      .finally(() => {});
+    load().catch((e) => {
+      if (!mounted) return;
+      setRepos([]); // keep UI stable
+      setError(e instanceof Error ? e.message : "Failed to load projects.");
+    });
+
     return () => {
       mounted = false;
     };
@@ -73,10 +76,7 @@ export default function ProjectsSection() {
 
   const isLoading = repos === null;
 
-  const viewAllUrl = useMemo(
-    () => `https://github.com/${USERNAME}?tab=stars`,
-    []
-  );
+  const viewAllUrl = useMemo(() => `https://github.com/${USERNAME}?tab=stars`, []);
 
   return (
     <section id="projects" className="section bg-white">
@@ -89,6 +89,10 @@ export default function ProjectsSection() {
         </div>
 
         <SectionReveal>
+          {error ? (
+            <p className="mt-6 text-sm text-red-600">{error}</p>
+          ) : null}
+
           <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {isLoading &&
               Array.from({ length: LIMIT }).map((_, i) => (
@@ -105,7 +109,6 @@ export default function ProjectsSection() {
                     className="group block card hover-lift overflow-hidden"
                     aria-label={`Open ${r.name} on GitHub`}
                   >
-                    {/* Accent header (varies by language) */}
                     <div className={`h-20 bg-gradient-to-br ${langAccent(r.language)}`} />
 
                     <div className="p-6">

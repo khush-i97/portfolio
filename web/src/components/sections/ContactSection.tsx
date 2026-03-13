@@ -2,8 +2,67 @@
 
 import Reveal from "@/components/Reveal";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { useMemo, useState } from "react";
+
+type Status =
+  | { state: "idle" }
+  | { state: "loading" }
+  | { state: "success" }
+  | { state: "error"; message: string };
 
 export default function ContactSection() {
+  const [status, setStatus] = useState<Status>({ state: "idle" });
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setStatus({ state: "loading" });
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    const payload = {
+      name: String(formData.get("name") || ""),
+      email: String(formData.get("email") || ""),
+      message: String(formData.get("message") || ""),
+      company: String(formData.get("company") || ""), // honeypot
+    };
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = (await res.json()) as { ok: boolean; error?: string };
+
+      if (!res.ok || !data.ok) {
+        setStatus({
+          state: "error",
+          message: data.error || "Something went wrong. Please try again.",
+        });
+        return;
+      }
+
+      setStatus({ state: "success" });
+      form.reset();
+    } catch {
+      setStatus({ state: "error", message: "Network error. Please try again." });
+    }
+  }
+
+  const isBusy = status.state === "loading";
+
+  const statusNode = useMemo(() => {
+    if (status.state === "success") {
+      return <p className="mt-3 text-sm text-green-600">Message sent successfully!</p>;
+    }
+    if (status.state === "error") {
+      return <p className="mt-3 text-sm text-red-600">{status.message}</p>;
+    }
+    return null;
+  }, [status]);
+
   return (
     <section
       id="contact"
@@ -49,18 +108,30 @@ export default function ContactSection() {
 
           {/* RIGHT FORM */}
           <div className="card p-7 md:p-9">
-            <form className="space-y-5">
-              <Field label="Name" placeholder="Your name" />
-              <Field label="Email" type="email" placeholder="you@example.com" />
-              <Field textarea label="Message" placeholder="Tell me what you're building..." />
+            <form className="space-y-5" onSubmit={onSubmit}>
+              {/* honeypot hidden field */}
+              <input
+                type="text"
+                name="company"
+                tabIndex={-1}
+                autoComplete="off"
+                className="hidden"
+              />
+
+              <Field name="name" label="Name" placeholder="Your name" />
+              <Field name="email" label="Email" type="email" placeholder="you@example.com" />
+              <Field name="message" textarea label="Message" placeholder="Tell me what you're building..." />
 
               <button
                 type="submit"
-                className="w-full rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-3.5 text-sm md:text-base font-semibold text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg inline-flex items-center justify-center gap-2"
+                disabled={isBusy}
+                className="w-full rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-3.5 text-sm md:text-base font-semibold text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg inline-flex items-center justify-center gap-2 disabled:opacity-60 disabled:hover:translate-y-0"
               >
                 <Send className="h-4 w-4" />
-                Send Message
+                {isBusy ? "Sending..." : "Send Message"}
               </button>
+
+              {statusNode}
             </form>
           </div>
         </Reveal>
@@ -94,11 +165,13 @@ function ContactRow({
 }
 
 function Field({
+  name,
   label,
   type = "text",
   placeholder,
   textarea,
 }: {
+  name: string;
   label: string;
   type?: string;
   placeholder?: string;
@@ -110,12 +183,14 @@ function Field({
 
       {textarea ? (
         <textarea
+          name={name}
           rows={6}
           placeholder={placeholder}
           className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-purple-400 focus:ring-4 focus:ring-purple-100"
         />
       ) : (
         <input
+          name={name}
           type={type}
           placeholder={placeholder}
           className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-purple-400 focus:ring-4 focus:ring-purple-100"
