@@ -56,13 +56,14 @@ export default function ProjectsSection() {
 
     async function load() {
       const res = await fetch("/api/projects");
-      const data = (await res.json()) as ApiResponse;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const data = (await res.json()) as any;
 
-      if (!res.ok || !data.ok) {
-        throw new Error(!data.ok ? data.error : `Request failed (${res.status})`);
+      if (!res.ok || !data?.ok) {
+        throw new Error(data?.error ?? `Request failed (${res.status})`);
       }
 
-      if (mounted) setRepos(data.repos);
+      if (mounted) setRepos((data as ApiResponse & { ok: true }).repos);
     }
 
     load().catch((e) => {
