@@ -27,6 +27,7 @@ function langAccent(language: string | null) {
   if (l.includes("java")) return "from-orange-500 to-rose-500";
   if (l.includes("go")) return "from-cyan-500 to-sky-500";
   if (l.includes("scala")) return "from-red-500 to-orange-500";
+  if (l.includes("jupyter")) return "from-fuchsia-500 to-purple-600";
   return "from-fuchsia-500 to-purple-600";
 }
 
@@ -38,6 +39,7 @@ function langDot(language: string | null) {
   if (l.includes("java")) return "bg-orange-500";
   if (l.includes("go")) return "bg-cyan-500";
   if (l.includes("scala")) return "bg-red-500";
+  if (l.includes("jupyter")) return "bg-fuchsia-500";
   return "bg-fuchsia-500";
 }
 
@@ -65,7 +67,7 @@ export default function ProjectsSection() {
 
     load().catch((e) => {
       if (!mounted) return;
-      setRepos([]); // keep UI stable
+      setRepos([]);
       setError(e instanceof Error ? e.message : "Failed to load projects.");
     });
 
@@ -76,10 +78,10 @@ export default function ProjectsSection() {
 
   const isLoading = repos === null;
 
-  const viewAllUrl = useMemo(() => `https://github.com/${USERNAME}?tab=stars`, []);
+  const viewAllUrl = useMemo(() => `https://github.com/${USERNAME}?tab=repositories`, []);
 
   return (
-    <section id="projects" className="section bg-white">
+    <section id="projects" className="section">
       <div className="container">
         <div className="section-title">
           <SectionReveal>
@@ -93,7 +95,7 @@ export default function ProjectsSection() {
             <p className="mt-6 text-sm text-red-600">{error}</p>
           ) : null}
 
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
             {isLoading &&
               Array.from({ length: LIMIT }).map((_, i) => (
                 <ProjectSkeleton key={i} />
@@ -106,20 +108,20 @@ export default function ProjectsSection() {
                     href={`${r.html_url}#readme`}
                     target="_blank"
                     rel="noreferrer"
-                    className="group block card hover-lift overflow-hidden"
+                    className="group flex flex-col h-full card hover-lift overflow-hidden"
                     aria-label={`Open ${r.name} on GitHub`}
                   >
-                    <div className={`h-20 bg-gradient-to-br ${langAccent(r.language)}`} />
+                    <div className={`h-20 shrink-0 bg-gradient-to-br ${langAccent(r.language)}`} />
 
-                    <div className="p-6">
+                    <div className="flex flex-col flex-1 p-4 md:p-6">
                       <div className="flex items-start justify-between gap-3">
                         <h3 className="text-lg font-bold text-slate-900 group-hover:text-fuchsia-700 transition">
                           {r.name}
                         </h3>
-                        <ExternalLink className="h-4 w-4 text-slate-400 group-hover:text-fuchsia-700 transition" />
+                        <ExternalLink className="h-4 w-4 shrink-0 text-slate-400 group-hover:text-fuchsia-700 transition" />
                       </div>
 
-                      <p className="mt-2 text-sm text-slate-600">
+                      <p className="mt-2 text-sm text-slate-600 flex-1">
                         {r.description ?? "No description yet."}
                       </p>
 
@@ -167,12 +169,12 @@ export default function ProjectsSection() {
 
 function ProjectSkeleton() {
   return (
-    <div className="card overflow-hidden">
-      <div className="h-20 w-full bg-slate-100 animate-pulse" />
-      <div className="p-6 space-y-3">
+    <div className="card overflow-hidden flex flex-col h-full">
+      <div className="h-20 w-full bg-slate-100 animate-pulse shrink-0" />
+      <div className="p-6 flex flex-col flex-1 space-y-3">
         <div className="h-4 w-2/3 bg-slate-100 rounded animate-pulse" />
         <div className="h-3 w-full bg-slate-100 rounded animate-pulse" />
-        <div className="h-3 w-5/6 bg-slate-100 rounded animate-pulse" />
+        <div className="h-3 w-5/6 bg-slate-100 rounded animate-pulse flex-1" />
         <div className="mt-2 flex gap-2">
           <div className="h-7 w-24 bg-slate-100 rounded-full animate-pulse" />
           <div className="h-7 w-16 bg-slate-100 rounded-full animate-pulse" />

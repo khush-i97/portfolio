@@ -14,12 +14,15 @@ export default function Home() {
       <div id="top" />
       <Navbar />
       <Hero />
-      <AboutSection />
-      <EducationSection />
-      <SkillsSection />
-      <ExperienceSection />
-      <ProjectsSection />
-      <ContactSection />
+      {/* Unified gradient wrapper — all sections share a continuous background */}
+      <div className="bg-gradient-to-b from-purple-50 via-fuchsia-50/40 to-white">
+        <AboutSection />
+        <EducationSection />
+        <SkillsSection />
+        <ExperienceSection />
+        <ProjectsSection />
+        <ContactSection />
+      </div>
     </>
   );
 }

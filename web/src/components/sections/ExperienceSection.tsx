@@ -47,7 +47,7 @@ const experience: Exp[] = [
 
 export default function ExperienceSection() {
   return (
-    <section id="experience" className="section bg-white">
+    <section id="experience" className="section">
       <div className="container">
         <div className="section-title">
           <SectionReveal>
@@ -71,26 +71,22 @@ export default function ExperienceSection() {
                     <div className="absolute left-[7px] md:left-1/2 -translate-x-1/2 top-7 h-3 w-3 rounded-full bg-white ring-4 ring-fuchsia-500/30" />
 
                     <div className="md:grid md:grid-cols-2 md:gap-10">
-                      {/* LEFT (desktop) */}
-                      <div className="pl-10 md:pl-0">
+                      {/* LEFT (desktop only) */}
+                      <div className="hidden md:block">
                         {isLeft ? (
-                          <div className="md:pr-10 md:flex md:justify-end">
+                          <div className="pr-10 flex justify-end">
                             <ExperienceCard item={item} />
                           </div>
-                        ) : (
-                          <div className="hidden md:block" />
-                        )}
+                        ) : null}
                       </div>
 
-                      {/* RIGHT (desktop) */}
-                      <div className="pl-10 md:pl-0">
+                      {/* RIGHT (desktop only) */}
+                      <div className="hidden md:block">
                         {!isLeft ? (
-                          <div className="md:pl-10 md:flex md:justify-start">
+                          <div className="pl-10 flex justify-start">
                             <ExperienceCard item={item} />
                           </div>
-                        ) : (
-                          <div className="hidden md:block" />
-                        )}
+                        ) : null}
                       </div>
 
                       {/* MOBILE (always stacked) */}

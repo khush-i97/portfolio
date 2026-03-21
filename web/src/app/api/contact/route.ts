@@ -39,52 +39,30 @@ export async function POST(req: Request) {
     const to = requireEnv("CONTACT_TO_EMAIL");
     const from = requireEnv("CONTACT_FROM_EMAIL");
 
-    // 1) Email to you
-    const toYou = await resend.emails.send({
+    // Send contact notification to portfolio owner
+    const { error } = await resend.emails.send({
       from,
       to: [to],
       replyTo: email,
       subject: `Portfolio contact: ${name}`,
       html: `
-        <div style="font-family:ui-sans-serif,system-ui">
-          <h2>New contact message</h2>
+        <div style="font-family:ui-sans-serif,system-ui;max-width:600px;margin:0 auto">
+          <h2 style="color:#9333ea">New Contact Message</h2>
           <p><strong>Name:</strong> ${escapeHtml(name)}</p>
-          <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+          <p><strong>Email:</strong> <a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></p>
           <p><strong>Message:</strong></p>
-          <pre style="white-space:pre-wrap;line-height:1.4">${escapeHtml(message)}</pre>
+          <pre style="white-space:pre-wrap;line-height:1.6;background:#f5f5f5;padding:12px;border-radius:6px">${escapeHtml(message)}</pre>
+          <p style="color:#888;font-size:12px">Sent via your portfolio contact form. Reply directly to this email to respond to ${escapeHtml(name)}.</p>
         </div>
       `,
     });
 
-    if (toYou.error) {
-      console.error("Resend error (toYou):", toYou.error);
+    if (error) {
+      console.error("Resend error:", error);
       return NextResponse.json(
-        { ok: false, error: toYou.error.message || "Failed to send message." },
+        { ok: false, error: error.message || "Failed to send message." },
         { status: 500 }
       );
-    }
-
-    // 2) Copy to sender
-    const copy = await resend.emails.send({
-      from,
-      to: [email],
-      subject: "Copy of your message",
-      html: `
-        <div style="font-family:ui-sans-serif,system-ui">
-          <p>Hi ${escapeHtml(name)},</p>
-          <p>Thanks for reaching out! Here's a copy of your message:</p>
-          <hr/>
-          <pre style="white-space:pre-wrap;line-height:1.4">${escapeHtml(message)}</pre>
-          <hr/>
-          <p>I’ll get back to you soon.</p>
-        </div>
-      `,
-    });
-
-    if (copy.error) {
-      console.error("Resend error (copy):", copy.error);
-      // still allow success if the first email sent
-      return NextResponse.json({ ok: true, warning: "Copy failed." });
     }
 
     return NextResponse.json({ ok: true });

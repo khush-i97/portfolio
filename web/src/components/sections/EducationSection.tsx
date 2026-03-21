@@ -28,59 +28,50 @@ export default function EducationSection() {
   ];
 
   return (
-    <section id="education" className="bg-gradient-to-b from-fuchsia-50 to-white px-6 py-20">
-      <div className="mx-auto max-w-6xl">
-        <h2 className="text-center text-4xl font-extrabold text-fuchsia-600">
-          Education
-        </h2>
-        <div className="mx-auto mt-3 h-1 w-24 rounded-full bg-fuchsia-600" />
+    <section id="education" className="section">
+      <div className="container">
+        <div className="section-title">
+          <h2>Education</h2>
+          <div className="underline" />
+        </div>
 
-        <h3 className="mt-12 text-3xl font-extrabold text-gray-900">
-          Academic Background
-        </h3>
+        <h3 className="mt-12 text-slate-900">Academic Background</h3>
 
         {/* IMPORTANT: items-stretch makes both cards the same height in the row */}
         <div className="mt-8 grid gap-8 md:grid-cols-2 items-stretch">
           {education.map((e) => (
-            <HoverCard
+            <div
               key={e.degree}
-              className="h-full p-8 text-white bg-gradient-to-br from-purple-600 via-fuchsia-600 to-pink-600"
+              className="h-full p-5 md:p-8 text-white bg-gradient-to-br from-purple-600 via-fuchsia-600 to-pink-600 rounded-xl shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
             >
-              {/* IMPORTANT: h-full + flex-col so GPA can be pushed to bottom */}
               <div className="flex h-full flex-col">
-                <div className="flex items-start gap-4">
-                  <div className="rounded-2xl bg-white/15 p-3 shrink-0">
-                    <GraduationCap className="h-7 w-7" />
+                <div className="flex items-start gap-3 md:gap-4">
+                  <div className="rounded-xl bg-white/15 p-2 md:p-3 shrink-0">
+                    <GraduationCap className="h-5 w-5 md:h-7 md:w-7" />
                   </div>
 
-                  {/* min-w-0 prevents layout weirdness when title wraps */}
                   <div className="min-w-0">
-                    {/* Clamp title to 2 lines + reserve title space so both cards align */}
-                    <h4 className="text-2xl font-extrabold leading-tight line-clamp-2 min-h-[3.6rem]">
+                    <h4 className="text-base md:text-2xl font-extrabold leading-tight line-clamp-2 min-h-[2.5rem] md:min-h-[3.6rem]">
                       {e.degree}
                     </h4>
-
-                    <p className="mt-1 text-yellow-300 font-semibold">{e.school}</p>
-                    <p className="mt-3 text-white/90">{e.years}</p>
+                    <p className="mt-1 text-yellow-300 font-semibold text-sm md:text-base">{e.school}</p>
+                    <p className="mt-1 md:mt-3 text-white/90 text-sm">{e.years}</p>
                   </div>
                 </div>
 
-                <p className="mt-6 text-white/90">{e.details}</p>
+                <p className="mt-4 md:mt-6 text-white/90 text-sm">{e.details}</p>
 
-                {/* Push GPA to the bottom so it always lines up */}
-                <div className="mt-auto pt-8">
-                  <div className="inline-flex rounded-xl bg-white/15 px-4 py-2 font-semibold">
+                <div className="mt-auto pt-5 md:pt-8">
+                  <div className="inline-flex rounded-lg bg-white/15 px-3 md:px-4 py-1.5 md:py-2 text-sm font-semibold">
                     GPA: {e.gpa}
                   </div>
                 </div>
               </div>
-            </HoverCard>
+            </div>
           ))}
         </div>
 
-        <h3 className="mt-16 text-4xl font-extrabold text-gray-900">
-          Certifications
-        </h3>
+        <h3 className="mt-16 text-slate-900">Certifications</h3>
 
         <div className="mt-10 grid gap-8 md:grid-cols-2">
           {certs.map((c) => (

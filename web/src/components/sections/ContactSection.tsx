@@ -66,7 +66,7 @@ export default function ContactSection() {
   return (
     <section
       id="contact"
-      className="section bg-gradient-to-br from-purple-100 via-fuchsia-100 to-white"
+      className="section"
     >
       <div className="container">
         <div className="section-title">

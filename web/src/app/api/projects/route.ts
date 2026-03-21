@@ -21,7 +21,7 @@ export async function GET() {
     const token = process.env.GITHUB_TOKEN; // optional
 
     const res = await fetch(
-      `https://api.github.com/users/${username}/starred?per_page=100`,
+      `https://api.github.com/users/${username}/repos?per_page=100&type=owner`,
       {
         headers: {
           Accept: "application/vnd.github+json",
